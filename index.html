@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://dgxavyaydxsjmykjdnpg.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_pBfAJU5FnzlLYjPZVtZrAA_BycI9kH6";
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Form Henkaten</title>
@@ -292,9 +298,11 @@
 
 <script>
 const form = document.getElementById("henkatenForm");
+let editId = null;
 
-function loadHasil(){
-    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
+async function loadHasil(){
+    const { data, error } = await supabase.from("henkaten").select("*").order("id", { ascending: false });
+    if(error) return console.error(error);
     const tbody = document.getElementById("hasilTableBody");
     tbody.innerHTML = "";
     data.forEach((item, index) => {
@@ -312,36 +320,33 @@ function loadHasil(){
             <td>${item.manfaat || "-"}</td>
             <td>${item.foto ? `<img src="${item.foto}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="lihatFoto('${item.foto}')">` : "-"}</td>
             <td style="white-space:nowrap;">
-                <button class="btn-edit" onclick="editData(${index})">Edit</button>
-                <button class="btn-hapus" onclick="hapusData(${index})">Hapus</button>
+                <button class="btn-edit" onclick="editData('${item.id}')">Edit</button>
+                <button class="btn-hapus" onclick="hapusData('${item.id}')">Hapus</button>
             </td>
         `;
         tbody.appendChild(row);
     });
 }
 
-function hapusData(index){
-    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
-    data.splice(index, 1);
-    localStorage.setItem("henkatenData", JSON.stringify(data));
+async function hapusData(id){
+    if(!confirm("Hapus data ini?")) return;
+    await supabase.from("henkaten").delete().eq("id", id);
     loadHasil();
 }
 
-let editIndex = -1;
-
-function editData(index){
-    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
-    const item = data[index];
-    form.querySelector('input[type="date"]').value = item.tanggal || "";
-    form.querySelector('input[placeholder="Contoh: Produksi"]').value = item.departemen || "";
-    form.querySelector('input[placeholder="Masukkan nama"]').value = item.pelapor || "";
-    form.querySelector('input[placeholder="Contoh: Line 1"]').value = item.area || "";
-    form.querySelector("select").value = item.kategori || "Safety";
-    form.querySelectorAll("textarea")[0].value = item.before || "";
-    form.querySelectorAll("textarea")[1].value = item.perubahan || "";
-    form.querySelectorAll("textarea")[2].value = item.after || "";
-    form.querySelectorAll("textarea")[3].value = item.manfaat || "";
-    editIndex = index;
+async function editData(id){
+    const { data, error } = await supabase.from("henkaten").select("*").eq("id", id).single();
+    if(error) return console.error(error);
+    form.querySelector('input[type="date"]').value = data.tanggal || "";
+    form.querySelector('input[placeholder="Contoh: Produksi"]').value = data.departemen || "";
+    form.querySelector('input[placeholder="Masukkan nama"]').value = data.pelapor || "";
+    form.querySelector('input[placeholder="Contoh: Line 1"]').value = data.area || "";
+    form.querySelector("select").value = data.kategori || "Safety";
+    form.querySelectorAll("textarea")[0].value = data.before || "";
+    form.querySelectorAll("textarea")[1].value = data.perubahan || "";
+    form.querySelectorAll("textarea")[2].value = data.after || "";
+    form.querySelectorAll("textarea")[3].value = data.manfaat || "";
+    editId = id;
     showSection("form");
     form.querySelector('button[type="submit"]').textContent = "Update Henkaten";
 }
@@ -368,11 +373,10 @@ function kompresFoto(file, cb){
     reader.readAsDataURL(file);
 }
 
-form.addEventListener("submit", function(e){
+form.addEventListener("submit", async function(e){
     e.preventDefault();
-    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
     const fileInput = document.getElementById("uploadFoto");
-    const simpan = function(fotoData){
+    const simpan = async function(fotoData){
         const formData = {
             tanggal: form.querySelector('input[type="date"]').value,
             departemen: form.querySelector('input[placeholder="Contoh: Produksi"]').value,
@@ -385,14 +389,13 @@ form.addEventListener("submit", function(e){
             manfaat: form.querySelectorAll("textarea")[3].value,
             foto: fotoData
         };
-        if(editIndex >= 0){
-            data[editIndex] = formData;
-            editIndex = -1;
+        if(editId){
+            await supabase.from("henkaten").update(formData).eq("id", editId);
+            editId = null;
             form.querySelector('button[type="submit"]').textContent = "Simpan Henkaten";
         } else {
-            data.push(formData);
+            await supabase.from("henkaten").insert(formData);
         }
-        localStorage.setItem("henkatenData", JSON.stringify(data));
         form.reset();
         fileInput.value = "";
         alert("Data Henkaten berhasil disimpan!");
