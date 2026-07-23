@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "https://dgxavyaydxsjmykjdnpg.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_pBfAJU5FnzlLYjPZVtZrAA_BycI9kH6";
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script type="importmap">
+{
+  "imports": {
+    "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
+  }
+}
+</script>
+<script type="module">
+import { createClient } from '@supabase/supabase-js';
+window.SUPABASE = createClient("https://dgxavyaydxsjmykjdnpg.supabase.co", "sb_publishable_pBfAJU5FnzlLYjPZVtZrAA_BycI9kH6");
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -296,11 +301,13 @@
 
 </div>
 
-<script>
+<script type="module">
+const supabase = window.SUPABASE;
+
 const form = document.getElementById("henkatenForm");
 let editId = null;
 
-async function loadHasil(){
+window.loadHasil = async function(){
     const { data, error } = await supabase.from("henkaten").select("*").order("id", { ascending: false });
     if(error) return console.error(error);
     const tbody = document.getElementById("hasilTableBody");
@@ -320,21 +327,21 @@ async function loadHasil(){
             <td>${item.manfaat || "-"}</td>
             <td>${item.foto ? `<img src="${item.foto}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="lihatFoto('${item.foto}')">` : "-"}</td>
             <td style="white-space:nowrap;">
-                <button class="btn-edit" onclick="editData('${item.id}')">Edit</button>
-                <button class="btn-hapus" onclick="hapusData('${item.id}')">Hapus</button>
+                <button class="btn-edit" onclick="window.editData('${item.id}')">Edit</button>
+                <button class="btn-hapus" onclick="window.hapusData('${item.id}')">Hapus</button>
             </td>
         `;
         tbody.appendChild(row);
     });
-}
+};
 
-async function hapusData(id){
+window.hapusData = async function(id){
     if(!confirm("Hapus data ini?")) return;
     await supabase.from("henkaten").delete().eq("id", id);
-    loadHasil();
-}
+    window.loadHasil();
+};
 
-async function editData(id){
+window.editData = async function(id){
     const { data, error } = await supabase.from("henkaten").select("*").eq("id", id).single();
     if(error) return console.error(error);
     form.querySelector('input[type="date"]').value = data.tanggal || "";
@@ -347,9 +354,9 @@ async function editData(id){
     form.querySelectorAll("textarea")[2].value = data.after || "";
     form.querySelectorAll("textarea")[3].value = data.manfaat || "";
     editId = id;
-    showSection("form");
+    window.showSection("form");
     form.querySelector('button[type="submit"]').textContent = "Update Henkaten";
-}
+};
 
 function kompresFoto(file, cb){
     const reader = new FileReader();
@@ -399,7 +406,7 @@ form.addEventListener("submit", async function(e){
         form.reset();
         fileInput.value = "";
         alert("Data Henkaten berhasil disimpan!");
-        loadHasil();
+        window.loadHasil();
     };
     if(fileInput.files && fileInput.files[0]){
         kompresFoto(fileInput.files[0], simpan);
@@ -408,15 +415,15 @@ form.addEventListener("submit", async function(e){
     }
 });
 
-function showSection(section){
+window.showSection = function(section){
     document.getElementById("formSection").style.display = section === "form" ? "block" : "none";
     document.getElementById("hasilSection").style.display = section === "hasil" ? "block" : "none";
     document.getElementById("btnForm").className = section === "form" ? "active" : "";
     document.getElementById("btnHasil").className = section === "hasil" ? "active" : "";
-    if(section === "hasil") loadHasil();
-}
+    if(section === "hasil") window.loadHasil();
+};
 
-function lihatFoto(dataUrl){
+window.lihatFoto = function(dataUrl){
     const img = new Image();
     img.onload = function(){
         const canvas = document.createElement("canvas");
@@ -432,7 +439,7 @@ function lihatFoto(dataUrl){
         document.getElementById("fotoModal").classList.add("active");
     };
     img.src = dataUrl;
-}
+};
 </script>
 
 </body>
