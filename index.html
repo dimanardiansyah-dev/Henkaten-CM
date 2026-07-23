@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Henkaten</title>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        background:#c6f0ff;
+        margin:0;
+        padding:20px;
+    }
+
+    .container{
+        max-width:800px;
+        margin:auto;
+        background:#d7ffee;
+        padding:25px;
+        border-radius:10px;
+        box-shadow:0 0 10px rgba(0,0,0,.2);
+    }
+
+    h2{
+        text-align:center;
+        color:#0d47a1;
+    }
+
+    label{
+        font-weight:bold;
+        display:block;
+        margin-top:15px;
+    }
+
+    input, select, textarea{
+        width:100%;
+        padding:10px;
+        margin-top:5px;
+        border:1px solid #ccc;
+        border-radius:5px;
+        box-sizing:border-box;
+    }
+
+    textarea{
+        resize:vertical;
+    }
+
+    .row{
+        display:flex;
+        gap:15px;
+    }
+
+    .col{
+        flex:1;
+    }
+
+    button{
+        margin-top:20px;
+        padding:12px;
+        width:100%;
+        border:none;
+        background:#1976d2;
+        color:white;
+        font-size:16px;
+        border-radius:5px;
+        cursor:pointer;
+    }
+
+    button:hover{
+        background:#1565c0;
+    }
+
+    .nav-menu{
+        display:flex;
+        gap:10px;
+        margin-bottom:20px;
+        justify-content:center;
+    }
+
+    .nav-menu button{
+        width:auto;
+        padding:10px 20px;
+        margin-top:0;
+        background:#0d47a1;
+    }
+
+    .nav-menu button:hover{
+        background:#1565c0;
+    }
+
+    .nav-menu button.active{
+        background:#ff8f00;
+    }
+
+    #hasilSection{
+        display:none;
+    }
+
+    #hasilSection{
+        overflow-x:auto;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:15px;
+        font-size:13px;
+    }
+
+    table, th, td{
+        border:1px solid #b0bec5;
+    }
+
+    th, td{
+        padding:8px 10px;
+        text-align:center;
+        vertical-align:middle;
+    }
+
+    th{
+        background:#0d47a1;
+        color:white;
+        white-space:nowrap;
+    }
+
+    td{
+        background:#fff;
+    }
+
+    tbody tr:nth-child(even) td{
+        background:#e3f2fd;
+    }
+
+    tbody tr:hover td{
+        background:#bbdefb;
+    }
+
+    .btn-hapus{
+        background:#d32f2f;
+        width:auto;
+        padding:4px 10px;
+        font-size:12px;
+        margin:2px;
+        border-radius:3px;
+        display:inline-block;
+    }
+
+    .btn-hapus:hover{
+        background:#b71c1c;
+    }
+
+    .btn-edit{
+        background:#f9a825;
+        width:auto;
+        padding:4px 10px;
+        font-size:12px;
+        margin:2px;
+        border-radius:3px;
+        display:inline-block;
+    }
+
+    .btn-edit:hover{
+        background:#f57f17;
+    }
+
+    /* Modal */
+    .modal-overlay{
+        display:none;
+        position:fixed;
+        top:0;left:0;right:0;bottom:0;
+        background:rgba(0,0,0,0.8);
+        z-index:999;
+        justify-content:center;
+        align-items:center;
+    }
+
+    .modal-overlay.active{
+        display:flex;
+    }
+
+    .modal-overlay img{
+        max-width:90%;
+        max-height:90%;
+        border-radius:8px;
+        box-shadow:0 0 30px rgba(0,0,0,0.5);
+    }
+
+    .modal-overlay .close{
+        position:absolute;
+        top:20px;
+        right:30px;
+        color:#fff;
+        font-size:36px;
+        cursor:pointer;
+        font-weight:bold;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="nav-menu">
+    <button id="btnForm" class="active" onclick="showSection('form')">Form Henkaten</button>
+    <button id="btnHasil" onclick="showSection('hasil')">Hasil Henkaten</button>
+</div>
+
+<div id="formSection">
+<h2>FORM HENKATEN CORE MAKING</h2>
+
+<form id="henkatenForm">
+
+<div class="row">
+    <div class="col">
+        <label>Tanggal</label>
+        <input type="date" required>
+    </div>
+
+    <div class="col">
+        <label>Departemen</label>
+        <input type="text" placeholder="Contoh: Produksi">
+    </div>
+</div>
+
+<label>Nama Pelapor</label>
+<input type="text" placeholder="Masukkan nama">
+
+<label>Area / Line</label>
+<input type="text" placeholder="Contoh: Line 1">
+
+<label>Kategori</label>
+<select>
+    <option>Safety</option>
+    <option>Quality</option>
+    <option>Delivery</option>
+    <option>Cost</option>
+    <option>Productivity</option>
+    <option>5S</option>
+</select>
+
+<label>Kondisi Sebelum (Before)</label>
+<textarea rows="4" placeholder="Jelaskan kondisi sebelum perubahan"></textarea>
+
+<label>Perubahan yang Dilakukan</label>
+<textarea rows="4" placeholder="Jelaskan aktivitas Henkaten"></textarea>
+
+<label>Kondisi Sesudah (After)</label>
+<textarea rows="4" placeholder="Hasil setelah perubahan"></textarea>
+
+<label>Manfaat</label>
+<textarea rows="3" placeholder="Contoh: Mengurangi waktu proses, meningkatkan keamanan"></textarea>
+
+<label>Upload Foto</label>
+<input type="file" id="uploadFoto" accept="image/*">
+
+<button type="submit">Simpan Henkaten</button>
+
+</form>
+</div>
+
+<div id="hasilSection">
+    <h2>HASIL HENKATEN CORE MAKING</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Departemen</th>
+                <th>Pelapor</th>
+                <th>Area/Line</th>
+                <th>Kategori</th>
+                <th style="min-width:120px;">Kondisi Sebelum</th>
+                <th style="min-width:120px;">Perubahan</th>
+                <th style="min-width:120px;">Kondisi Sesudah</th>
+                <th style="min-width:120px;">Manfaat</th>
+                <th>Foto</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="hasilTableBody"></tbody>
+    </table>
+</div>
+
+<div class="modal-overlay" id="fotoModal" onclick="this.classList.remove('active')">
+    <span class="close">&times;</span>
+    <img id="fotoModalImg">
+</div>
+
+</div>
+
+<script>
+const form = document.getElementById("henkatenForm");
+
+function loadHasil(){
+    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
+    const tbody = document.getElementById("hasilTableBody");
+    tbody.innerHTML = "";
+    data.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item.tanggal || "-"}</td>
+            <td>${item.departemen || "-"}</td>
+            <td>${item.pelapor || "-"}</td>
+            <td>${item.area || "-"}</td>
+            <td>${item.kategori || "-"}</td>
+            <td>${item.before || "-"}</td>
+            <td>${item.perubahan || "-"}</td>
+            <td>${item.after || "-"}</td>
+            <td>${item.manfaat || "-"}</td>
+            <td>${item.foto ? `<img src="${item.foto}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="lihatFoto('${item.foto}')">` : "-"}</td>
+            <td style="white-space:nowrap;">
+                <button class="btn-edit" onclick="editData(${index})">Edit</button>
+                <button class="btn-hapus" onclick="hapusData(${index})">Hapus</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function hapusData(index){
+    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
+    data.splice(index, 1);
+    localStorage.setItem("henkatenData", JSON.stringify(data));
+    loadHasil();
+}
+
+let editIndex = -1;
+
+function editData(index){
+    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
+    const item = data[index];
+    form.querySelector('input[type="date"]').value = item.tanggal || "";
+    form.querySelector('input[placeholder="Contoh: Produksi"]').value = item.departemen || "";
+    form.querySelector('input[placeholder="Masukkan nama"]').value = item.pelapor || "";
+    form.querySelector('input[placeholder="Contoh: Line 1"]').value = item.area || "";
+    form.querySelector("select").value = item.kategori || "Safety";
+    form.querySelectorAll("textarea")[0].value = item.before || "";
+    form.querySelectorAll("textarea")[1].value = item.perubahan || "";
+    form.querySelectorAll("textarea")[2].value = item.after || "";
+    form.querySelectorAll("textarea")[3].value = item.manfaat || "";
+    editIndex = index;
+    showSection("form");
+    form.querySelector('button[type="submit"]').textContent = "Update Henkaten";
+}
+
+function kompresFoto(file, cb){
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const img = new Image();
+        img.onload = function(){
+            const canvas = document.createElement("canvas");
+            const maxW = 400, maxH = 400;
+            let w = img.width, h = img.height;
+            if(w > maxW || h > maxH){
+                const ratio = Math.min(maxW / w, maxH / h);
+                w *= ratio; h *= ratio;
+            }
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            cb(canvas.toDataURL("image/jpeg", 0.6));
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+    const data = JSON.parse(localStorage.getItem("henkatenData") || "[]");
+    const fileInput = document.getElementById("uploadFoto");
+    const simpan = function(fotoData){
+        const formData = {
+            tanggal: form.querySelector('input[type="date"]').value,
+            departemen: form.querySelector('input[placeholder="Contoh: Produksi"]').value,
+            pelapor: form.querySelector('input[placeholder="Masukkan nama"]').value,
+            area: form.querySelector('input[placeholder="Contoh: Line 1"]').value,
+            kategori: form.querySelector("select").value,
+            before: form.querySelectorAll("textarea")[0].value,
+            perubahan: form.querySelectorAll("textarea")[1].value,
+            after: form.querySelectorAll("textarea")[2].value,
+            manfaat: form.querySelectorAll("textarea")[3].value,
+            foto: fotoData
+        };
+        if(editIndex >= 0){
+            data[editIndex] = formData;
+            editIndex = -1;
+            form.querySelector('button[type="submit"]').textContent = "Simpan Henkaten";
+        } else {
+            data.push(formData);
+        }
+        localStorage.setItem("henkatenData", JSON.stringify(data));
+        form.reset();
+        fileInput.value = "";
+        alert("Data Henkaten berhasil disimpan!");
+        loadHasil();
+    };
+    if(fileInput.files && fileInput.files[0]){
+        kompresFoto(fileInput.files[0], simpan);
+    } else {
+        simpan(null);
+    }
+});
+
+function showSection(section){
+    document.getElementById("formSection").style.display = section === "form" ? "block" : "none";
+    document.getElementById("hasilSection").style.display = section === "hasil" ? "block" : "none";
+    document.getElementById("btnForm").className = section === "form" ? "active" : "";
+    document.getElementById("btnHasil").className = section === "hasil" ? "active" : "";
+    if(section === "hasil") loadHasil();
+}
+
+function lihatFoto(dataUrl){
+    const img = new Image();
+    img.onload = function(){
+        const canvas = document.createElement("canvas");
+        const targetW = 1280, targetH = 720;
+        const ratio = Math.min(targetW / img.width, targetH / img.height);
+        let w = img.width * ratio;
+        let h = img.height * ratio;
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        document.getElementById("fotoModalImg").src = canvas.toDataURL("image/jpeg", 0.9);
+        document.getElementById("fotoModal").classList.add("active");
+    };
+    img.src = dataUrl;
+}
+</script>
+
+</body>
+</html>
